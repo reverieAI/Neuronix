@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuronix - BINIM</title>
+    
+    <!-- Google Font: VT323 (Pixel/Computer Font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Added for smooth scrolling (for anchor links if we revert) */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Global Styles */
+        body {
+            background-color: #000000;
+            color: #f0f0f0;
+            font-family: 'VT323', monospace; /* Pixel font */
+            font-size: 20px;
+            line-height: 1.75; /* Increased line spacing */
+            overflow-x: hidden;
+            letter-spacing: 0.05em;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="8" cy="8" r="3" fill="white"/></svg>') 8 8, auto;
+        }
+
+        /* Background Canvas Animation */
+        #network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4; /* Make it subtle */
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px; /* --- INCREASED WIDTH HERE --- */
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative; /* Context for z-index */
+            z-index: 100; /* Ensure header is above menu overlay */
+        }
+
+        .logo {
+            font-size: 28px;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+
+        /* Desktop Navigation Links */
+        nav a {
+            color: #aaaaaa;
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 22px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a:focus {
+            color: #ffffff;
+        }
+        
+        /* Hamburger Menu Icon (Hidden on desktop) */
+        #menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #00ff00; /* Neon Green */
+            font-size: 30px;
+            cursor: pointer;
+            padding: 5px 10px;
+            z-index: 101; /* Above everything */
+        }
+        
+        /* Icon styles */
+        .hamburger-icon, .close-icon {
+            font-family: 'VT323', monospace;
+            font-size: 30px;
+            line-height: 1;
+        }
+        .close-icon {
+            display: none;
+        }
+
+
+        /* --- Page Container --- */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            text-align: left;
+            padding: 60px 0;
+            width: 100%;
+        }
+
+        /* --- Page Switching --- */
+        .page {
+            display: none;
+            width: 100%;
+        }
+        .page-active {
+            display: block;
+        }
+
+        .hero {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* --- Universal Page Header --- */
+        .page-header {
+            font-size: 48px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+            line-height: 1;
+            min-height: 58px;
+        }
+        
+        .page-subtitle {
+            font-size: 24px;
+            color: #aaaaaa;
+            margin-bottom: 40px;
+            min-height: 29px;
+        }
+
+        .page-content {
+            font-size: 22px;
+            color: #f0f0f0;
+            line-height: 1.2;
+            text-align: left;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            padding-left: 20px;
+            min-height: 300px;
+            white-space: pre-wrap;
+        }
+
+
+        /* --- Blinking Cursor Style --- */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            margin-left: 2px;
+            animation: blink 1s steps(1) infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Minimal CTA Button */
+        .cta-button {
+            display: inline-block;
+            border: 1px solid #f0f0f0;
+            color: #f0f0f0;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin-top: 30px;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-button:hover, .cta-button:focus {
+            background-color: #f0f0f0;
+            color: #000000;
+        }
+
+        /* --- New Card Styles --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            padding-top: 0;
+            margin-top: -90px;
+        }
+
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .card h3 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .card .card-role {
+            font-size: 20px;
+            color: #aaaaaa;
+            margin-bottom: 15px;
+        }
+
+        .card .card-desc {
+            font-size: 18px;
+            color: #f0f0f0;
+            line-height: 1.5;
+        }
+        
+        /* --- Wallet/Support Styles (NEW) --- */
+        
+        .donate-button {
+            display: none;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            background: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            margin-top: 30px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .donate-button:hover {
+            background-color: #00ff00;
+            color: #000000;
+        }
+
+        /* Spinner Style */
+        .spinner {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #f0f0f0;
+            border-top: 2px solid #00ff00; /* Neon green top border */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .wallet-entry {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: rgba(0, 255, 0, 0.05); /* Subtle green background */
+            padding: 10px;
+            border: 1px dashed #00ff00;
+        }
+
+        .coin-icon {
+            font-size: 20px;
+            width: 130px;
+            flex-shrink: 0;
+            color: #00ff00;
+            text-align: left;
+        }
+
+        .address-text {
+            flex-grow: 1;
+            font-size: 18px;
+            word-break: break-all;
+            margin-right: 15px;
+            color: #cccccc;
+        }
+
+        .copy-button {
+            background-color: #00ff00;
+            color: #000000;
+            border: none;
+            padding: 5px 10px;
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-button:hover {
+            background-color: #ffffff;
+        }
+
+        /* New Serif Font for Donation/Contact Text */
+        .serif-contact {
+            font-family: 'Times New Roman', Georgia, serif; /* Seris font for contrast */
+            font-size: 18px; /* Slightly smaller for professionalism */
+            line-height: 1.6; /* Standard line height for serif text */
+            color: #DDDDDD;
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #777777;
+            background-color: rgba(50, 50, 50, 0.5); /* Dark background for visibility */
+        }
+
+        /* Notification Box for Copy */
+        #copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #00ff00;
+            color: #000000;
+            padding: 15px 25px;
+            border-radius: 4px;
+            font-family: sans-serif; /* Use a readable font for transient notifications */
+            font-size: 16px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: #777777;
+            font-size: 16px;
+            margin-top: auto; /* Push footer to bottom */
+        }
+
+        /* ======================================================= */
+        /* RESPONSIVE DESIGN & HAMBURGER MENU */
+        /* ======================================================= */
+        @media (max-width: 600px) {
+            
+            /* Show the toggle button */
+            #menu-toggle {
+                display: block;
+            }
+
+            /* Hide the desktop navigation links by default */
+            nav {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.98); /* Near black overlay */
+                padding-top: 100px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                z-index: 99;
+                /* Add subtle transition for opening/closing */
+                transition: transform 0.3s ease-in-out; 
+                transform: translateX(100%); /* Start off-screen */
+            }
+            
+            /* Class toggled by JS to open the menu */
+            nav.nav-open {
+                display: flex;
+                transform: translateX(0); /* Slide into view */
+            }
+            
+            /* Show the close icon when menu is open */
+            nav.nav-open + #menu-toggle .hamburger-icon {
+                display: none;
+            }
+            nav.nav-open + #menu-toggle .close-icon {
+                display: block;
+                color: #ff0000; /* Red X for closing */
+            }
+
+            /* Adjust link styling for the vertical mobile menu */
+            nav a {
+                margin: 15px 0;
+                font-size: 32px; /* Bigger links for touch targets */
+            }
+
+            header {
+                /* Keep logo and toggle on one line */
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                /* Remove margin added in previous version */
+                margin-bottom: 0;
+            }
+            
+            .page-header {
+                font-size: 36px;
+                min-height: 44px;
+            }
+
+            .page-subtitle {
+                font-size: 20px;
+            }
+
+            .page-content {
+                font-size: 20px;
+            }
+            
+            .wallet-entry {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .coin-icon, .address-text {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .copy-button {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Subtle Background Animation -->
+    <canvas id="network-canvas"></canvas>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <a class="logo" onclick="showPage('manifesto')">NEURONIX</a>
+            
+            <!-- Navigation (Desktop/Mobile Menu Container) -->
+            <nav id="main-nav">
+                <a onclick="showPage('technology')">BINIM</a>
+                <a onclick="showPage('team')">TEAM</a>
+                <a onclick="showPage('support')">SUPPORT ME</a>
+                <a onclick="showPage('contact')">CONTACT</a>
+            </nav>
+            
+            <!-- Hamburger/Close Toggle Button (Mobile Only) -->
+            <button id="menu-toggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-icon">MENU</span>
+                <span class="close-icon">EXIT</span>
+            </button>
+        </header>
+
+        <!-- Main Page Container -->
+        <main>
+
+            <!-- MANIFESTO PAGE -->
+            <div id="page-manifesto" class="page hero">
+                <!-- Content will be populated by JS -->
+                <h1 class="page-header"></h1>
+                <p class="page-subtitle"></p>
+                <p class="page-content"></p>
+                <a class="cta-button" onclick="showPage('technology')">LEARN MORE</a>
+            </div>
+
+            <!-- TECHNOLOGY PAGE -->
+            <div id="page-technology" class="page hero">
+                <h1 class="page-header"></h1>
+                <p class="page-subtitle"></p>
+                <p class="page-content"></p>
+            </div>
+
+            <!-- TEAM PAGE -->
+            <div id="page-team" class="page hero">
+                <h1 class="page-header"></h1>
+                <p class="page-subtitle"></p>
+                <p class="page-content"></p>
+                <!-- Cards will be here -->
+                <div class="card-grid" style="display:none;">
+                    <!-- Founder Card -->
+                    <div class="card">
+                        <h3>Daniel Eftekhari</h3>
+                        <p class="card-role">Founder & Builder</p>
+                        <p class="card-desc">The single source of vision, strategy, and engineering direction. Amplified, not assisted, by specialized AI agents.</p>
+                    </div>
+
+                    <!-- AI Agent Cards -->
+                    <div class="card">
+                        <h3>DeepResearch</h3>
+                        <p class="card-role">ROLE: R&D / INTEL</p>
+                        <p class="card-desc">I use ChatGPT, Gemini, and Grok’s DeepResearch for R&D—delivering fast, cited SNN & neuroscience insights.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>ClaudeCode / Cursor</h3>
+                        <p class="card-role">ROLE: CORE DEVELOPMENT</p>
+                        <p class="card-desc">Rapidly writes, debugs, and refactors high-performance simulation code for the BINIM architecture. Unlocks 100x velocity.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUPPORT PAGE (NEW) -->
+            <div id="page-support" class="page hero">
+                <h1 class="page-header"></h1>
+                <p class="page-subtitle"></p>
+                <div class="support-content-wrapper">
+                    <p class="page-content"></p>
+                    
+                    <!-- Funding Section -->
+                    <div id="funding-section" style="margin-top: 40px; text-align: left;">
+                        <button id="donate-button" class="donate-button" style="display: none;">ACTIVATE DONATION PORTALS</button>
+
+                        <!-- Spinner/Loading State -->
+                        <div id="wallet-loading" style="display: none; font-size: 20px; color: #00ff00;">
+                            <span class="spinner"></span> Generating new wallets...
+                        </div>
+
+                        <!-- Wallet Address Display -->
+                        <div id="wallet-addresses" style="display: none; margin-top: 20px;">
+                            <!-- Content generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT PAGE -->
+            <div id="page-contact" class="page hero">
+                <h1 class="page-header"></h1>
+                <p class="page-subtitle"></p>
+                <p class="page-content"></p>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            &copy; 2025 NEURONIX. ALL RIGHTS RESERVED.
+        </footer>
+
+    </div>
+
+    <!-- Copy Notification Box (Outside Main Container) -->
+    <div id="copy-notification"></div>
+
+    <script>
+        // --- Mobile Menu Management ---
+        const nav = document.getElementById('main-nav');
+        const menuToggle = document.getElementById('menu-toggle');
+        
+        // Add event listener for the hamburger icon
+        menuToggle.addEventListener('click', () => {
+            nav.classList.toggle('nav-open');
+        });
+
+        // --- Page Content Definitions ---
+        const pageContent = {
+            manifesto: {
+                h1: "Step1: Solve Intelligence.\nStep2: Use It To Solve Everything.", 
+                subtitle: "The singular mission to create the intelligence humanity requires.",
+                content: `Artificially Superhuman Intelligence is not just possible — it is necessary.
+Humanity has always built tools to extend its reach — the wheel, the engine, the computer. Each amplified power, but not thought.
+Now the frontier is cognition itself.
+
+The creation of true intelligence — not imitation, not prediction, but understanding — is the defining technical pursuit of this century.
+Humanity’s future depends on the creation of systems that can reason, learn, and align beyond human limits.
+
+Building them safely is the defining technical challenge of our time.
+
+The current generation of AI has reached its limits.
+Massive generative systems are optimized for imitation, not understanding.
+They predict patterns, but do not think. Their reasoning is shallow, their safety unverifiable, and their energy demands unsustainable.
+Scaling imitation will never produce genuine intelligence.
+
+Neuronix was created to change this direction.
+
+The work is centered on BINIM — the Brain Inspired Non-biological Intelligent Machine — a new cognitive architecture designed to achieve real cognition, reasoning, and memory.
+BINIM represents a clean break from the generative paradigm. It is built on spiking neural principles and engineered to reproduce the mechanisms of understanding itself.
+
+Safety in BINIM is not added later; it is inherent.
+Alignment, control, and verification are embedded in the architecture from the start.
+Capability and safety evolve together, ensuring progress never outruns stability.
+
+Neuronix operates independently, without commercial distractions or institutional constraints.
+Every effort is focused on a single goal: creating true intelligence that can be trusted.`,
+                showButton: true
+            },
+            technology: {
+                h1: "BINIM ARCHITECTURE: The Road to Genuine Cognition.",
+                subtitle: "Embedded safety and verifiable reasoning through architectural redesign.",
+                content: `The era of Generative AI is defined by optimization engines that only mimic and predict. This large-scale, statistical imitation fundamentally blocks the path to true intelligence and, more importantly, makes verifiable safety impossible. We reject this broken paradigm.
+
+The BINIM architecture (Brain-Inspied Non-Biological Intelligent Machine) is the required architectural leap: a radical new approach in spiking neural networks (SNNs). It is designed from the ground up to instantiate genuine cognition, memory, and high-level reasoning.
+
+Our core belief is that safety must be *architectural*, not a patch. BINIM embeds alignment directly into its functional core. This singular focus allows us to relentlessly advance capability while the safety and control framework remains perpetually ahead, guaranteeing the integrity of the eventual superintelligence.`,
+                showButton: false
+            },
+            team: {
+                h1: "THE SOLO ARCHITECT",
+                subtitle: "Empowered by a Team of A.I. Agents.",
+                content: `Neuronix doesn't need a traditional office or hierarchy. I manage this organization, and my partners are a fleet of high-powered, purpose-built AI models. This solo-founder approach is the ultimate lean structure, ensuring rapid iteration and absolute focus.`, 
+                showButton: false
+            },
+            support: {
+                h1: "COMMUNITY FUNDING INITIATIVE",
+                subtitle: "Support pure, uncompromised R&D velocity.",
+                content: `As a solo founder, Neuronix operates with unparalleled efficiency and focus. I'm not interested in the slow, compromising nature of traditional VC capital, which often prioritizes marketability over true breakthrough research.
+
+Our mission—building the foundational architecture for true, aligned ASI—requires resources, specifically high-end compute and relentless development time.
+
+If you believe in the future of genuine intelligence, bypass the institutional gatekeepers and support the mission directly. Your donation enables pure, uncompromised R&D velocity.`,
+                showButton: true 
+            },
+            contact: {
+                h1: "CONTACT",
+                subtitle: "For partnerships, investment, or media contact.",
+                content: `Neuronix operates quietly and deliberately. The focus is on research and execution, not publicity.
+
+This mission is led by a single founder. For partnership or investment inquiries, connect through the links below.
+
+X (Founder): <a href="https://x.com/DanEftekhari" target="_blank">https://x.com/DanEftekhari</a>
+
+Email: <a href="mailto:dan.eftekhari@neuronix.com">dan.eftekhari@neuronix.com</a>`,
+                showButton: false
+            }
+        };
+
+        // --- Utility Functions ---
+
+        /**
+         * Displays a temporary notification message on the screen.
+         * @param {string} message - The message to display.
+         */
+        function showNotification(message) {
+            let notification = document.getElementById('copy-notification');
+            if (!notification) {
+                // Should not happen as it's in the HTML, but for safety:
+                notification = document.createElement('div');
+                notification.id = 'copy-notification';
+                document.body.appendChild(notification);
+            }
+            notification.textContent = message;
+            notification.style.opacity = '1';
+            
+            clearTimeout(window.notificationTimeout);
+            window.notificationTimeout = setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 3000);
+        }
+
+        /**
+         * Copies text to clipboard using document.execCommand('copy').
+         * @param {string} text - The text to copy.
+         */
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            tempInput.style.position = 'fixed'; // Prevent scrolling to the bottom
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                // Using execCommand for reliability in iFrame environments
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('Address copied to clipboard.');
+                } else {
+                    showNotification('Copy failed. Please copy manually.');
+                }
+            } catch (err) {
+                showNotification('Copy failed. Please copy manually.');
+                console.error('Copy error:', err);
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        /**
+         * Handles the button click to display wallet addresses.
+         */
+        function generateWallets() {
+            const button = document.getElementById('donate-button');
+            const loading = document.getElementById('wallet-loading');
+            const addressesDiv = document.getElementById('wallet-addresses');
+
+            if (!button || !loading || !addressesDiv) return;
+            
+            // 1. Show spinner and hide button/old addresses
+            button.style.display = 'none';
+            addressesDiv.style.display = 'none';
+            loading.style.display = 'block';
+            addressesDiv.innerHTML = ''; // Clear previous content
+
+            const wallets = [
+                { coin: 'BTC (Bitcoin)', address: 'bc1qrz9seenwm9fx7v0g4hx4xnv0zxq85whqjwq0fq' },
+                { coin: 'ETH (ERC-20)', address: '0xCd6eE15Ff482B10C740527F8C27B83ad99e131b7' },
+                { coin: 'TRX (Tron)', address: 'TSX6PSsPJ8CfhN1pCyXM65wuZyRvU2x4Vb' },
+                { coin: 'TON (Toncoin)', address: 'UQCVGbamlzuewhRKTpG4B4dQ-QvXRoUnIQGCpOsDLVwi3XWq' },
+                { coin: 'USDT (TRC-20)', address: 'TSX6PSsPJ8CfhN1pCyXM65wuZyRvU2x4Vb' },
+                { coin: 'USDT (BEP-20)', address: '0xCd6eE15Ff482B10C740527F8C27B83ad99e131b7' },
+                { coin: 'USDT (ERC-20)', address: '0xCd6eE15Ff482B10C740527F8C27B83ad99e131b7' },
+            ];
+
+            // Text to appear only after clicking 'ACTIVATE' button
+            const confirmationText = `
+                <div class="serif-contact">
+                    <strong style="color: #00ff00;">TRANSACTION CONFIRMATION AND ACCESS:</strong>
+                    <br><br>
+                    Thank you for your trust. To confirm your donation and gain access to the *exclusive Neuronix newsletter*, please forward your transaction ID or screenshot to:
+                    <br><br>
+                    Email: <a href="mailto:dan.eftekhari@neuronix.com" style="color: #00ffff; text-decoration: underline;">dan.eftekhari@neuronix.com</a>
+                    <br><br>
+                    Your support directly fuels the BINIM mission, bypassing compromised corporate research structures.
+                </div>
+            `;
+
+            // 2. Simulate network delay
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                let html = '';
+                wallets.forEach(wallet => {
+                    // Note: copyToClipboard is available globally in the script scope
+                    html += `
+                        <div class="wallet-entry">
+                            <span class="coin-icon">${wallet.coin}:</span>
+                            <span class="address-text">${wallet.address}</span>
+                            <button class="copy-button" onclick="copyToClipboard('${wallet.address}')">COPY</button>
+                        </div>
+                    `;
+                });
+                
+                // APPEND THE NEW CONTACT TEXT HERE
+                html += confirmationText; 
+
+                addressesDiv.innerHTML = html;
+                addressesDiv.style.display = 'block';
+                button.textContent = 'RE-ACTIVATE PORTALS'; // Change button text for subsequent clicks
+                button.style.display = 'inline-block'; // Show button again
+                
+            }, 1500); // 1.5 second delay
+        }
+
+
+        // --- Typing Effect ---
+        let currentTypingCallback = null; // Stores the current active typing function
+
+        /**
+         * Types out text into an element, character by character.
+         * @param {HTMLElement} element - The DOM element to type into.
+         * @param {string} text - The text to type.
+         * @param {number} speed - The typing speed in milliseconds.
+         * @param {Function} onComplete - Function to execute when typing is complete.
+         */
+        function typeWriter(element, text, speed, onComplete, allowHtml = false) {
+            let i = 0;
+            element.innerHTML = ''; // Clear element
+            
+            const cursorSpan = document.createElement('span');
+            cursorSpan.classList.add('cursor');
+            element.appendChild(cursorSpan);
+
+            function type() {
+                if (currentTypingCallback !== type) {
+                    return;
+                }
+
+                if (i < text.length) {
+                    if (text.charAt(i) === '\n') {
+                        cursorSpan.insertAdjacentHTML('beforebegin', '<br>');
+                        i++;
+                    } else if (allowHtml && text.substr(i, 2) === '<a') {
+                        // Find the end of the anchor tag
+                        const end = text.indexOf('</a>', i);
+                        if (end !== -1) {
+                            const html = text.substring(i, end + 4);
+                            cursorSpan.insertAdjacentHTML('beforebegin', html);
+                            i = end + 4;
+                        } else {
+                            cursorSpan.insertAdjacentText('beforebegin', text.charAt(i));
+                            i++;
+                        }
+                    } else {
+                        cursorSpan.insertAdjacentText('beforebegin', text.charAt(i));
+                        i++;
+                    }
+                    setTimeout(type, speed);
+                } else {
+                    cursorSpan.remove(); // Typing finished
+                    if (onComplete) onComplete();
+                }
+            }
+            
+            currentTypingCallback = type;
+            type();
+        }
+
+        /**
+         * Clears and types out the content for a specific page.
+         * @param {string} pageId - The ID of the page (e.g., 'manifesto').
+         */
+        function typeOutPage(pageId) {
+            const content = pageContent[pageId];
+            if (!content) return;
+
+            const pageElement = document.getElementById(`page-${pageId}`);
+            if (!pageElement) return;
+
+            const h1 = pageElement.querySelector('.page-header');
+            const subtitle = pageElement.querySelector('.page-subtitle');
+            const p = pageElement.querySelector('.page-content');
+            
+            // Clear all content immediately
+            if (h1) h1.innerHTML = '';
+            if (subtitle) subtitle.innerHTML = '';
+            if (p) p.innerHTML = '';
+            
+            // Hide generic CTA button (used only on manifesto)
+            const cta = pageElement.querySelector('.cta-button');
+            if (cta) cta.style.display = 'none';
+            
+            // Hide the support button and wallet display
+            const donateButton = document.getElementById('donate-button');
+            const walletAddresses = document.getElementById('wallet-addresses');
+            const walletLoading = document.getElementById('wallet-loading');
+            
+            if (donateButton) donateButton.style.display = 'none';
+            if (walletAddresses) walletAddresses.style.display = 'none';
+            if (walletLoading) walletLoading.style.display = 'none';
+
+
+            // --- Core Typing Setup ---
+            const TYPE_SPEED_H1 = (pageId === 'team') ? 60 : 30;
+            const TYPE_SPEED_TEXT = (pageId === 'team') ? 30 : 15;
+            
+            if (p) {
+                // Reset border animation
+                p.style.borderLeft = "none";
+                p.style.paddingLeft = "0";
+            }
+            
+            const typingChain = () => {
+                typeWriter(h1, content.h1, TYPE_SPEED_H1, () => {
+                    typeWriter(subtitle, content.subtitle, TYPE_SPEED_TEXT, () => {
+                        if (p) {
+                            // Animate border
+                            p.style.transition = "border-left 0.5s ease, padding-left 0.5s ease";
+                            p.style.borderLeft = "1px solid rgba(255, 255, 255, 0.3)";
+                            p.style.paddingLeft = "20px";
+
+                            setTimeout(() => {
+                                if (pageId === 'contact') {
+                                    typeWriter(p, content.content, TYPE_SPEED_TEXT, () => {}, true);
+                                } else {
+                                    typeWriter(p, content.content, TYPE_SPEED_TEXT, () => {
+                                        // Show specific buttons after content is fully typed
+                                        if (pageId === 'manifesto' && cta) {
+                                            cta.style.display = 'inline-block';
+                                        } else if (pageId === 'support' && donateButton) {
+                                            // Set up the click handler and show the button
+                                            donateButton.onclick = generateWallets;
+                                            donateButton.style.display = 'inline-block';
+                                        }
+                                    });
+                                }
+                            }, 500); // Wait for border
+                        }
+                    });
+                });
+            };
+
+
+            // --- Special handling for team page (cards are static) ---
+            if (pageId === 'team') {
+                const cardGrid = pageElement.querySelector('.card-grid');
+                if (cardGrid) cardGrid.style.display = 'none'; // Hide cards initially
+
+                // Speed up typing for TEAM section (+175%)
+                const FAST_TYPE_SPEED_H1 = Math.round(60 / 1.75); // ~34
+                const FAST_TYPE_SPEED_TEXT = Math.round(30 / 1.75); // ~17
+
+                typeWriter(h1, content.h1, FAST_TYPE_SPEED_H1, () => {
+                    typeWriter(subtitle, content.subtitle, FAST_TYPE_SPEED_TEXT, () => {
+                        if (p) {
+                            typeWriter(p, content.content, FAST_TYPE_SPEED_TEXT, () => {
+                                if (cardGrid) cardGrid.style.display = 'grid'; // Show cards after typing ends
+                            });
+                        }
+                    });
+                });
+                return;
+            }
+
+            // --- Standard page typing (including Manifesto, Technology, Contact, Support) ---
+            typingChain();
+        }
+
+
+        /**
+         * Main function to switch between pages.
+         * @param {string} pageId - The ID of the page to show.
+         */
+        function showPage(pageId) {
+            // Close the mobile menu if it's open
+            nav.classList.remove('nav-open');
+            
+            // Cancel any ongoing typing
+            currentTypingCallback = null; 
+
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('page-active'));
+            // Hide cards on navigation start
+            const cardGrids = document.querySelectorAll('.card-grid');
+            cardGrids.forEach(grid => grid.style.display = 'none');
+
+
+            // Show the target page
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('page-active');
+                // Start the typing effect for the new page
+                typeOutPage(pageId);
+            }
+        }
+
+
+        // --- Canvas Animation ---
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        const numParticles = 128;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = 1;
+                this.speedX = (Math.random() * 1) - 0.5;
+                this.speedY = (Math.random() * 1) - 0.5;
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = '#f0f0f0';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function initParticles() {
+            for (let i = 0; i < numParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        initParticles();
+        function connectParticles() {
+            const maxDistance = 100;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let dx = particlesArray[a].x - particlesArray[b].x;
+                    let dy = particlesArray[a].y - particlesArray[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - (distance / maxDistance)})`;
+                        ctx.lineWidth = 0.2;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+        
+        // --- Global Load Event ---
+        window.addEventListener('load', () => {
+            animate();
+            // Show the default page on load
+            showPage('manifesto');
+        });
+
+    </script>
+</body>
+</html>
