@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neuronix - BINIM</title>
     
-    <!-- Google Font: VT323 (Pixel/Computer Font) -->
+    <!-- Google Fonts: VT323 (Logo), Jersey 25 & Zen Dots (Content) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Jersey+25&family=Zen+Dots&display=swap" rel="stylesheet">
     
     <style>
         /* CSS Reset */
@@ -157,6 +157,16 @@
             min-height: 29px;
         }
 
+        .jersey-25-regular {
+            font-family: "Jersey 25", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .zen-dots-regular {
+            font-family: "Zen Dots", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
         .page-content {
             font-size: 22px;
             color: #f0f0f0;
@@ -166,6 +176,9 @@
             padding-left: 20px;
             min-height: 300px;
             white-space: pre-wrap;
+            font-family: "Jersey 25", sans-serif !important;
+            font-weight: 400;
+            font-style: normal;
         }
 
 
@@ -217,7 +230,7 @@
             width: 100%;
             max-width: 900px;
             padding-top: 0;
-            margin-top: -90px;
+            margin-top: 20px;
         }
 
         .card {
@@ -486,7 +499,7 @@
                 <!-- Content will be populated by JS -->
                 <h1 class="page-header"></h1>
                 <p class="page-subtitle"></p>
-                <p class="page-content"></p>
+                <p class="page-content jersey-25-regular"></p>
                 <a class="cta-button" onclick="showPage('technology')">LEARN MORE</a>
             </div>
 
@@ -494,14 +507,14 @@
             <div id="page-technology" class="page hero">
                 <h1 class="page-header"></h1>
                 <p class="page-subtitle"></p>
-                <p class="page-content"></p>
+                <p class="page-content jersey-25-regular"></p>
             </div>
 
             <!-- TEAM PAGE -->
             <div id="page-team" class="page hero">
                 <h1 class="page-header"></h1>
                 <p class="page-subtitle"></p>
-                <p class="page-content"></p>
+                <p class="page-content jersey-25-regular"></p>
                 <!-- Cards will be here -->
                 <div class="card-grid" style="display:none;">
                     <!-- Founder Card -->
@@ -531,11 +544,11 @@
                 <h1 class="page-header"></h1>
                 <p class="page-subtitle"></p>
                 <div class="support-content-wrapper">
-                    <p class="page-content"></p>
+                <p class="page-content jersey-25-regular"></p>
                     
                     <!-- Funding Section -->
                     <div id="funding-section" style="margin-top: 40px; text-align: left;">
-                        <button id="donate-button" class="donate-button" style="display: none;">ACTIVATE DONATION PORTALS</button>
+                        <button id="donate-button" class="donate-button" style="display: none;">GENERATE DONATION WALLETS</button>
 
                         <!-- Spinner/Loading State -->
                         <div id="wallet-loading" style="display: none; font-size: 20px; color: #00ff00;">
@@ -612,19 +625,33 @@ Every effort is focused on a single goal: creating true intelligence that can be
                 showButton: true
             },
             technology: {
-                h1: "BINIM ARCHITECTURE: The Road to Genuine Cognition.",
-                subtitle: "Embedded safety and verifiable reasoning through architectural redesign.",
-                content: `The era of Generative AI is defined by optimization engines that only mimic and predict. This large-scale, statistical imitation fundamentally blocks the path to true intelligence and, more importantly, makes verifiable safety impossible. We reject this broken paradigm.
+                h1: "BINIM: The Road to Genuine Cognition.",
+                subtitle: "A brain-inspired framework for genuine cognition, scalable reasoning, and intrinsic reliability.",
+                content: `BINIM (Brain Inspired Non-biological Intelligent Machine) is a new cognitive architecture built to achieve real intelligence — not symbolic, not simulated, but authentic cognition emerging from structure and process.
+Its design is inspired by the biological brain, capturing the core mechanisms that enable perception, abstraction, learning, and reasoning.
 
-The BINIM architecture (Brain-Inspied Non-Biological Intelligent Machine) is the required architectural leap: a radical new approach in spiking neural networks (SNNs). It is designed from the ground up to instantiate genuine cognition, memory, and high-level reasoning.
+BINIM is based on networks that organize, adapt, and evolve continuously, forming stable internal representations of the world. It learns in real time, generalizes across domains, and builds understanding from experience rather than statistical approximation.
 
-Our core belief is that safety must be *architectural*, not a patch. BINIM embeds alignment directly into its functional core. This singular focus allows us to relentlessly advance capability while the safety and control framework remains perpetually ahead, guaranteeing the integrity of the eventual superintelligence.`,
+Where biological neurons rely on chemistry, BINIM relies on transistors — giving it the ability to scale exponentially, operate at extreme speed, and sustain precision that biology cannot match. This non-biological substrate allows intelligence to expand far beyond human limits, while maintaining the same underlying cognitive principles that make thought possible.
+
+Reliability and safety are embedded directly into the architecture. BINIM’s design ensures that reasoning is transparent, outcomes are verifiable, and decision processes remain grounded in measurable logic. These safeguards are not external layers; they are structural features, inseparable from the core system. The result is intelligence that is not only powerful but stable, interpretable, and aligned by design.
+
+Neuronix is dedicated to building this architecture into a living system — one capable of genuine understanding, adaptable thought, and continuous growth. A synthetic brain, built for precision, creativity, and endurance.
+
+The mission is clear: to create a real thinking machine.
+An intelligence that learns as humans do — but moves at the speed of computation.
+The foundation for Artificially Superhuman Intelligence begins here.`,
                 showButton: false
             },
             team: {
                 h1: "THE SOLO ARCHITECT",
-                subtitle: "Empowered by a Team of A.I. Agents.",
-                content: `Neuronix doesn't need a traditional office or hierarchy. I manage this organization, and my partners are a fleet of high-powered, purpose-built AI models. This solo-founder approach is the ultimate lean structure, ensuring rapid iteration and absolute focus.`, 
+                subtitle: "Empowered by a Team of AI Agents.",
+                content: `It’s 2025 — the age of massive teams, long meetings, and corporate hierarchies is fading fast.
+Neuronix doesn’t need a traditional office or layers of management. This organization is run by one founder and a network of intelligent AI agents — a self-sufficient ecosystem of builders, researchers, and optimizers that never sleeps.
+
+In this new era, a solo architect can achieve what once demanded entire departments. Tasks that used to take ten people a week can now be built in under an hour. The result is a structure that’s infinitely lean, relentlessly focused, and impossibly fast.
+
+No bureaucracy. No friction. Just direct execution at machine speed.`, 
                 showButton: false
             },
             support: {
@@ -863,6 +890,10 @@ Email: <a href="mailto:Daniel.Neuronix@gmail.com">Daniel.Neuronix@gmail.com</a>`
                 // Reset border animation
                 p.style.borderLeft = "none";
                 p.style.paddingLeft = "0";
+                // Ensure Jersey 25 font is always applied
+                if (!p.classList.contains('jersey-25-regular')) {
+                    p.classList.add('jersey-25-regular');
+                }
             }
             
             const typingChain = () => {
@@ -1028,4 +1059,3 @@ Email: <a href="mailto:Daniel.Neuronix@gmail.com">Daniel.Neuronix@gmail.com</a>`
     </script>
 </body>
 </html>
-
